@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>贪吃蛇</title>
+</head>
+<body>
+<div class="box"></div>
+<div class="defen">
+    <div class="score">得分 <h2>0</h2></div>
+</div>
+
+<style>
+    .score{
+        width: 200px;
+        height:100px;
+        border:1px solid #000;
+        padding-top:10px;
+        position: absolute;
+        left:100px;
+        top:30px;
+        text-align: center;
+    }
+    .box{
+        width: 600px;
+        height: 600px;
+        border:1px solid #111;
+        margin: 0 auto;
+        background: url("1.jpg") no-repeat center;
+    }
+    .box>div{
+        width: 30px;
+        height: 30px;
+        /*border: 1px solid #111;*/
+        /*box-sizing: border-box;*/
+        float: left;
+    }
+    .she{
+        background: red;
+        background: url("2.jpg");
+        background-size: cover;
+    }
+    .food{
+        background: blue;
+    }
+</style>
+</body>
+</html>
+<script>
+    window.onload = function () {
+//        构建场景
+        let box = document.querySelector(".box");
+        let score=document.querySelector(".score h2");
+        console.log(score)
+        let str = ""
+        for (let i = 0; i < 20; i++) {
+            for (let j = 0; j < 20; j++) {
+                str += `<div id="c${j}-${i}"></div>`
+            }
+        }
+        box.innerHTML = str;
+//        构建元素
+        let she = [
+            {x: 0, y: 0},
+            {x: 1, y: 0},
+            {x: 2, y: 0}
+        ]
+
+//         画蛇
+        she.forEach(function (value) {
+            document.querySelector(`#c${value.x}-${value.y}`).classList.add('she');
+        });
+
+//        画食物
+        let foods=food()
+        function food() {
+            do {
+                var x = Math.floor(Math.random() * 20);
+                var y = Math.floor(Math.random() * 20);
+            } while (checked(x, y));
+            let food = document.querySelector(`#c${x}-${y}`);
+            food.classList.add('food');
+            return {x,y}
+        }
+
+        function checked(a,b) {
+            return she.some(val=> val.x == a && val.y == b);
+        }
+
+//            让蛇动起来
+        let way = 'right';
+        function move() {
+//            蛇头
+            let head = she[she.length - 1];
+            let newhead;
+//           声明蛇跑的方向
+            switch (way) {
+                case "right":
+                    newhead = {x: head.x + 1, y: head.y};
+                    break;
+                case "left":
+                    newhead = {x: head.x - 1, y: head.y};
+                    break;
+                case "top":
+                    newhead = {x: head.x, y: head.y - 1};
+                    break;
+                case "bottom":
+                    newhead = {x: head.x, y: head.y + 1};
+                    break;
+            }
+            let newheaddom = document.querySelector(`#c${newhead.x}-${newhead.y}`);
+            if (!newheaddom||checked(newhead.x,newhead.y)) {
+                clearInterval(t);
+                alert("游戏结束");
+                return;
+            }
+            newheaddom.className = "she";
+            she.push(newhead);
+            if(newhead.x===foods.x&&newhead.y===foods.y){
+                foods=food()
+            }else{
+                //            蛇尾
+                let end = she.shift();
+                let enddom = document.querySelector(`#c${end.x}-${end.y}`);
+                enddom.classList.remove("she");
+            }
+            score.innerHTML=she.length-3;
+        }
+
+        let t = setInterval(move, 200)
+//           控制方向
+        document.onkeydown = function (e) {
+            an = e.which;
+            switch (an) {
+                case 37:
+                    if (way == "right") {
+                        return;
+                    }
+                    way = 'left';
+                    break;
+                case 38:
+                    if (way == "bottom") {
+                        return;
+                    }
+                    way = 'top';
+                    break;
+                case 39:
+                    if (way == "left") {
+                        return;
+                    }
+                    way = 'right';
+                    break;
+                case 40:
+                    if (way == "top") {
+                        return;
+                    }
+                    way = 'bottom';
+                    break;
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+</script>
